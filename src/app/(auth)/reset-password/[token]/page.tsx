@@ -8,7 +8,9 @@ interface ResetPasswordPageProps {
 }
 
 export default async function ResetPasswordPage({ params }: ResetPasswordPageProps) {
-  const isValid = await validateResetToken(params.token)
+
+  const {token} = await params
+  const isValid = await validateResetToken(token)
 
   if (!isValid) {
     return (
@@ -25,7 +27,7 @@ export default async function ResetPasswordPage({ params }: ResetPasswordPagePro
     <div className="container max-w-lg mx-auto mt-8 px-4">
       <div className="bg-card rounded-lg p-6 shadow-lg">
         <h1 className="text-2xl font-semibold mb-4">Reset Your Password</h1>
-        <ResetPasswordForm token={params.token} />
+        <ResetPasswordForm token={token} />
       </div>
     </div>
   )

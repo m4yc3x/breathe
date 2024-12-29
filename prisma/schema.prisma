@@ -41,6 +41,8 @@ model User {
   emailVerified DateTime?
   image         String?
   hashedPassword String?
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret String?
   accounts      Account[]
   sessions      Session[]
   passwordResets PasswordReset[]

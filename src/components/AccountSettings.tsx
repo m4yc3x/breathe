@@ -17,13 +17,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserCircle, Mail, KeyRound, Shield } from "lucide-react"
 import { ChangePasswordModal } from "./ChangePasswordModal"
 import type { User } from "next-auth"
+import { TwoFactorModal } from "./TwoFactorModal"
+
+interface ExtendedUser extends User {
+  twoFactorEnabled: boolean
+}
 
 export function AccountSettings() {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const [showChangePassword, setShowChangePassword] = useState(false)
-  const [userData, setUserData] = useState<User | null>(null)
+  const [showTwoFactorModal, setShowTwoFactorModal] = useState(false)
+  const [userData, setUserData] = useState<ExtendedUser | null>(null)
 
   const {
     register,
@@ -55,6 +61,24 @@ export function AccountSettings() {
       fetchUserData()
     }
   }, [session, reset])
+
+  const handleTwoFactorUpdate = async (success: boolean) => {
+    if (success) {
+      const response = await fetch('/api/account/me')
+      const data = await response.json()
+      
+      if (response.ok) {
+        setUserData(data.user)
+        await update({
+          ...session,
+          user: {
+            ...session?.user,
+            twoFactorEnabled: data.user.twoFactorEnabled,
+          },
+        })
+      }
+    }
+  }
 
   const onSubmit = async (data: UpdateAccountInput) => {
     try {
@@ -196,10 +220,10 @@ export function AccountSettings() {
                   <Button 
                     variant="outline" 
                     className="w-full justify-start"
-                    disabled
+                    onClick={() => setShowTwoFactorModal(true)}
                   >
                     <Shield className="mr-2 h-4 w-4" />
-                    Enable 2FA (Coming Soon)
+                    {userData?.twoFactorEnabled ? 'Disable' : 'Enable'} 2FA
                   </Button>
                 </div>
               </CardContent>
@@ -211,6 +235,13 @@ export function AccountSettings() {
       <ChangePasswordModal 
         isOpen={showChangePassword} 
         onClose={() => setShowChangePassword(false)} 
+      />
+
+      <TwoFactorModal 
+        isOpen={showTwoFactorModal}
+        onClose={() => setShowTwoFactorModal(false)}
+        isEnabled={userData?.twoFactorEnabled ?? false}
+        onSuccess={handleTwoFactorUpdate}
       />
     </div>
   )

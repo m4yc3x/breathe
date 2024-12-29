@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import type { LoginInput } from '@/lib/validations/auth'
 import { ForgotPasswordModal } from './ForgotPasswordModal'
+import { LoginTwoFactorModal } from './LoginTwoFactorModal'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -23,6 +24,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [showTwoFactor, setShowTwoFactor] = useState(false)
+  const [loginCredentials, setLoginCredentials] = useState<LoginInput | null>(null)
 
   const {
     register,
@@ -43,6 +46,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         redirect: false,
       })
 
+      if (result?.error === 'TwoFactorRequired') {
+        setLoginCredentials(data)
+        setShowTwoFactor(true)
+        // Don't close the modal or show success message yet
+        return
+      }
+
       if (result?.error) {
         throw new Error('Invalid credentials')
       }
@@ -61,6 +71,29 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleTwoFactorVerify = async (code: string) => {
+    if (!loginCredentials) return
+
+    const result = await signIn('credentials', {
+      email: loginCredentials.email,
+      password: loginCredentials.password,
+      twoFactorCode: code,
+      redirect: false,
+    })
+
+    if (result?.error) {
+      throw new Error('Invalid verification code')
+    }
+
+    toast.success('Login successful!', {
+      description: 'Welcome back!',
+    })
+    
+    reset()
+    onClose()
+    router.refresh()
   }
 
   return (
@@ -116,9 +149,17 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </form>
         </DialogContent>
       </Dialog>
+
       <ForgotPasswordModal
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
+      />
+
+      <LoginTwoFactorModal
+        isOpen={showTwoFactor}
+        onClose={() => setShowTwoFactor(false)}
+        onVerify={handleTwoFactorVerify}
+        email={loginCredentials?.email || ''}
       />
     </>
   )
