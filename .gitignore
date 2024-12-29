@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Add these lines to your .gitignore
+.env
+prisma/*.db
+prisma/*.db-journal
+RULES.md
