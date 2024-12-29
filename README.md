@@ -1,15 +1,16 @@
 # Breathe - Modern Next.js Authentication Solution
 
-Breathe is a comprehensive authentication solution built with Next.js 15, designed to provide a robust starting point for modern web applications. It features secure password handling, email verification, and complete account management functionality.
+Breathe is a comprehensive authentication solution built with Next.js 15, designed to provide a robust starting point for modern web applications. It features secure password handling, email verification, password recovery, two-factor authentication, and complete account management functionality.
 
 ![Breathe Authentication](public/breathe.png)
 
 ## Features
 
-- 🔐 **Secure Authentication** - Industry-standard Argon2 password hashing with JWT tokens
+- 🔐 **Secure Authentication** - Industry-standard Argon2 password hashing and JWT authentication
 - 📧 **Email Integration** - Built-in email service for password resets and notifications
 - 🔄 **Password Recovery** - Time-limited tokens and email verification
-- 👤 **Account Management** - User-friendly interface for settings and preferences
+-  **Two-Factor Authentication** - Secure login with a second factor
+- �👤 **Account Management** - User-friendly interface for settings and preferences
 - 📊 **Database Ready** - Prisma ORM with MySQL support
 - ⚡ **Modern Stack** - React Server Components, TypeScript, and modern security practices
 

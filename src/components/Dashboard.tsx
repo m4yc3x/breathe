@@ -83,7 +83,7 @@ export function Dashboard() {
 const features = [
   {
     title: "Secure Authentication",
-    description: "Industry-standard Argon2 password hashing with secure session management using JWT tokens.",
+    description: "Industry-standard Argon2 password hashing with secure session management and two-factor authentication.",
     icon: Shield,
   },
   {
